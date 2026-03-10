@@ -5,18 +5,19 @@
 #
 # Env:
 #   VM_NAME - VM name (default: openclaw)
-#   VM_USER - SSH username (required; e.g. geegz or lume)
+#   VM_USER - SSH username (required; for example your VM account or `lume`)
 #   VM_IP   - optional; if set, skip resolving IP via lume get
+#   POSTGRES_PASSWORD - optional password for the `postgres` role; if unset, a password is generated once and reused
 #
 # Usage:
-#   VM_USER=geegz ./scripts/vm/install-postgres-vm.sh
+#   VM_USER=youruser ./scripts/vm/install-postgres-vm.sh
 #
 set -euo pipefail
 
 VM_NAME="${VM_NAME:-openclaw}"
 
 if [[ -z "${VM_USER:-}" ]]; then
-  echo "VM_USER is required (SSH username in the VM). Example: VM_USER=geegz $0"
+  echo "VM_USER is required (SSH username in the VM). Example: VM_USER=youruser $0"
   exit 1
 fi
 
@@ -39,12 +40,37 @@ if [[ -z "$IP" ]]; then
   exit 1
 fi
 
+POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-}"
+POSTGRES_PASSWORD_B64=""
+if [[ -n "$POSTGRES_PASSWORD" ]]; then
+  POSTGRES_PASSWORD_B64="$(printf '%s' "$POSTGRES_PASSWORD" | base64 | tr -d '\n')"
+fi
+
 echo "Installing PostgreSQL on $VM_USER@$IP (VM: $VM_NAME)..."
 
 # Remote script: install PostgreSQL (Homebrew or Postgres.app) and set postgres role password.
 REMOTE_SCRIPT='
-set -e
+set -euo pipefail
 export PATH="/opt/homebrew/bin:/usr/local/bin:/opt/homebrew/opt/postgresql@16/bin:/usr/local/opt/postgresql@16/bin:$PATH"
+
+PASSWORD_DIR="$HOME/.config/lume-openclaw"
+PASSWORD_FILE="$PASSWORD_DIR/postgres-password"
+
+if [[ -n "${POSTGRES_PASSWORD_B64:-}" ]]; then
+  POSTGRES_PASSWORD="$(printf "%s" "$POSTGRES_PASSWORD_B64" | base64 -d)"
+  mkdir -p "$PASSWORD_DIR"
+  chmod 700 "$PASSWORD_DIR"
+  printf "%s" "$POSTGRES_PASSWORD" > "$PASSWORD_FILE"
+  chmod 600 "$PASSWORD_FILE"
+elif [[ -f "$PASSWORD_FILE" ]]; then
+  POSTGRES_PASSWORD="$(cat "$PASSWORD_FILE")"
+else
+  mkdir -p "$PASSWORD_DIR"
+  chmod 700 "$PASSWORD_DIR"
+  POSTGRES_PASSWORD="$(LC_ALL=C tr -dc "A-Za-z0-9" </dev/urandom | head -c 24)"
+  printf "%s" "$POSTGRES_PASSWORD" > "$PASSWORD_FILE"
+  chmod 600 "$PASSWORD_FILE"
+fi
 
 install_via_homebrew() {
   echo "Installing PostgreSQL via Homebrew..."
@@ -91,10 +117,12 @@ fi
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:/opt/homebrew/opt/postgresql@16/bin:/usr/local/opt/postgresql@16/bin:$HOME/Applications/Postgres.app/Contents/Versions/latest/bin:$HOME/Applications/Postgres.app/Contents/Versions/18/bin:$PATH"
 createuser -s postgres 2>/dev/null || true
-psql -d postgres -c "ALTER USER postgres WITH PASSWORD '\''2597'\'';"
-echo "PostgreSQL is ready. User: postgres, password: 2597"
+psql -v pw="$POSTGRES_PASSWORD" -d postgres -c "ALTER USER postgres WITH PASSWORD :'pw';"
+echo "PostgreSQL is ready. User: postgres, password: $POSTGRES_PASSWORD"
+echo "Password file: $PASSWORD_FILE"
 '
 
-ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 "$VM_USER@$IP" "bash -s" <<< "$REMOTE_SCRIPT"
+ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 "$VM_USER@$IP" \
+  "POSTGRES_PASSWORD_B64='$POSTGRES_PASSWORD_B64' bash -s" <<< "$REMOTE_SCRIPT"
 
 echo "Done."

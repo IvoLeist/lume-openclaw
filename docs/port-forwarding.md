@@ -1,6 +1,6 @@
 # Port Forwarding and Webhooks for OpenClaw in the Lume VM
 
-When OpenClaw (Clawdbot) runs inside a Lume VM, the gateway listens inside the VM (default port **18789** for WebSocket, and HTTP for webhooks). For Telegram, WhatsApp, or other channels that use **webhooks**, the external service must be able to reach that gateway. The VM typically has a private IP (e.g. `192.168.64.x`) and is not directly reachable from the internet.
+When OpenClaw runs inside a Lume VM, the gateway listens inside the VM (default port **18789** for WebSocket, and HTTP for webhooks). For Telegram, WhatsApp, or other channels that use **webhooks**, the external service must be able to reach that gateway. The VM typically has a private IP (e.g. `192.168.64.x`) and is not directly reachable from the internet.
 
 This doc describes how to expose the VM’s gateway so webhooks work.
 

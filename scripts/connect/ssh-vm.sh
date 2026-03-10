@@ -5,17 +5,20 @@
 #
 # Env:
 #   VM_NAME - VM name (default: openclaw)
-#   VM_USER - SSH username (default: geegz)
+#   VM_USER - SSH username in the VM (required)
 #   VM_IP   - optional; if set, skip resolving IP via lume get
 #
 # Usage:
-#   ./scripts/connect/ssh-vm.sh
-#   VM_USER=myuser ./scripts/connect/ssh-vm.sh
+#   VM_USER=youruser ./scripts/connect/ssh-vm.sh
 #
 set -euo pipefail
 
 VM_NAME="${VM_NAME:-openclaw}"
-VM_USER="${VM_USER:-geegz}"
+
+if [[ -z "${VM_USER:-}" ]]; then
+  echo "VM_USER is required (SSH username in the VM). Example: VM_USER=youruser $0"
+  exit 1
+fi
 
 if ! command -v lume &>/dev/null; then
   echo "Lume is not installed. Run ./scripts/vm/install-lume.sh first."

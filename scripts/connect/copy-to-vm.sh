@@ -5,7 +5,7 @@
 #
 # Env:
 #   VM_NAME - VM name (default: openclaw)
-#   VM_USER - SSH username (required; e.g. geegz or lume)
+#   VM_USER - SSH username (required; for example your VM account or `lume`)
 #   VM_IP   - optional; if set, skip resolving IP via lume get
 #
 # Usage:

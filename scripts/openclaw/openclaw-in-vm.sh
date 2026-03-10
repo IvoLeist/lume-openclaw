@@ -4,19 +4,27 @@
 #
 # Env:
 #   VM_NAME - VM name (default: openclaw)
-#   VM_USER - SSH username (default: geegz; override if your VM user is different)
+#   VM_USER - SSH username in the VM (required)
 #   VM_IP   - optional; if set, skip resolving IP via lume get
 #
 # Usage:
-#   ./scripts/openclaw/openclaw-in-vm.sh                    # default: openclaw status
-#   ./scripts/openclaw/openclaw-in-vm.sh "openclaw status"
+#   VM_USER=youruser ./scripts/openclaw/openclaw-in-vm.sh
+#   VM_USER=youruser ./scripts/openclaw/openclaw-in-vm.sh "openclaw status"
 #   VM_USER=lume ./scripts/openclaw/openclaw-in-vm.sh "npm install -g openclaw@latest && openclaw onboard --install-daemon"
 #
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=./remote-env.lib.sh
+source "$SCRIPT_DIR/remote-env.lib.sh"
+
 VM_NAME="${VM_NAME:-openclaw}"
-VM_USER="${VM_USER:-geegz}"
 CMD="${1:-openclaw status}"
+
+if [[ -z "${VM_USER:-}" ]]; then
+  echo "VM_USER is required (SSH username in the VM). Example: VM_USER=youruser $0 \"openclaw status\""
+  exit 1
+fi
 
 if ! command -v lume &>/dev/null; then
   echo "Lume is not installed. Run ./scripts/vm/install-lume.sh first."
@@ -37,8 +45,10 @@ if [[ -z "$IP" ]]; then
   exit 1
 fi
 
-# Non-interactive SSH does not source ~/.zshrc; ensure npm global bin (openclaw) is on PATH.
-# Pass CMD via base64 to avoid quoting issues with special characters.
 B64_CMD=$(printf '%s' "$CMD" | base64 | tr -d '\n')
-ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 "$VM_USER@$IP" \
-  "export PATH=\"\$HOME/node-v22.12.0-darwin-arm64/bin:\$PATH\" && bash -c \"\$(echo $B64_CMD | base64 -d)\""
+exec ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 "$VM_USER@$IP" 'bash -s' <<EOF
+set -euo pipefail
+$(remote_env_prelude)
+CMD_B64='$B64_CMD'
+bash -lc "\$(printf '%s' "\$CMD_B64" | base64 -d)"
+EOF

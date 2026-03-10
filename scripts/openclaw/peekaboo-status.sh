@@ -5,21 +5,19 @@
 #
 # Env:
 #   VM_NAME - VM name (default: openclaw)
-#   VM_USER - SSH username (required; same as openclaw-in-vm.sh)
+#   VM_USER - SSH username in the VM (required; same as openclaw-in-vm.sh)
 #   VM_IP   - optional; if set, skip resolving IP via lume get
 #
 # Usage:
-#   VM_USER=myuser ./scripts/openclaw/peekaboo-status.sh
+#   VM_USER=youruser ./scripts/openclaw/peekaboo-status.sh
 #
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VM_NAME="${VM_NAME:-openclaw}"
 
 if [[ -z "${VM_USER:-}" ]]; then
-  echo "VM_USER is required (SSH username in the VM). Example: VM_USER=myuser $0"
+  echo "VM_USER is required (SSH username in the VM). Example: VM_USER=youruser $0"
   exit 1
 fi
 
-# Use $HOME/bin/peekaboo so it works when VM shell doesn't source .zshrc (non-interactive SSH)
-exec "$SCRIPT_DIR/openclaw-in-vm.sh" '$HOME/bin/peekaboo bridge status --verbose'
+exec "$SCRIPT_DIR/openclaw-in-vm.sh" 'peekaboo bridge status --verbose'

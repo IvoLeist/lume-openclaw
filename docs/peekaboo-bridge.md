@@ -34,7 +34,7 @@ Only one host needs to be running with the bridge enabled.
 
 ### OpenClaw.app (macOS Companion — alternative host)
 
-- **Download:** [OpenClaw / Clawdbot macOS Companion](https://docs.clawd.bot/platforms/macos) — follow the doc for the current download (installer or .app/.dmg). Install **inside the VM** (Safari in the VM or copy from host via `copy-to-vm.sh`).
+- **Download:** [OpenClaw macOS Companion](https://docs.clawd.bot/platforms/macos) — follow the doc for the current download (installer or .app/.dmg). Install **inside the VM** (Safari in the VM or copy from host via `copy-to-vm.sh`).
 
 ### After download
 
@@ -68,7 +68,7 @@ If you don’t see the app in the list, open the host app again and trigger an a
 
 ## 5. Install the `peekaboo` CLI in the VM
 
-The Peekaboo CLI comes from the [Peekaboo](https://github.com/steipete/Peekaboo) project (steipete), not from an OpenClaw npm package. There is **no** `@openclaw/peekaboo` or `clawdbot` peekaboo package; the project has been renamed (Moltbot → Clawdbot → OpenClaw) but Peekaboo has always been a separate repo. Install the CLI via **Homebrew**. Inside the VM (via SSH or VNC Terminal):
+The Peekaboo CLI comes from the [Peekaboo](https://github.com/steipete/Peekaboo) project (steipete), not from an OpenClaw npm package. There is **no** `@openclaw/peekaboo` package; install the CLI via **Homebrew**. Inside the VM (via SSH or VNC Terminal):
 
 ```bash
 brew install steipete/tap/peekaboo
@@ -115,18 +115,17 @@ The agent uses the `peekaboo` CLI to request screen snapshots; the host app (run
 
 ---
 
-## 8. Use Peekaboo with Clawdbot/OpenClaw
+## 8. Use Peekaboo with OpenClaw
 
-For the **agent** (Clawdbot/OpenClaw) to use Peekaboo, the gateway must load the **peekaboo skill** and be able to run the `peekaboo` binary. Do the following **inside the VM**.
+For OpenClaw to use Peekaboo, the gateway must load the **peekaboo skill** and be able to run the `peekaboo` binary. Do the following **inside the VM**.
 
 ### 8.1 Enable the peekaboo skill in config
 
-OpenClaw/Clawdbot uses a **skills** system; the peekaboo skill is often bundled and gated by the presence of the `peekaboo` binary on PATH. Enable it in your config.
+OpenClaw uses a **skills** system; the peekaboo skill is often bundled and gated by the presence of the `peekaboo` binary on PATH. Enable it in your config.
 
-Config file (one of these, depending on version):
+Config file:
 
-- **`~/.openclaw/openclaw.json`** (current OpenClaw)
-- or **`~/.clawdbot/moltbot.json`** (older naming)
+- **`~/.openclaw/openclaw.json`**
 
 Add or merge a `skills.entries` section with `peekaboo` enabled:
 
@@ -202,4 +201,4 @@ The agent can then use the peekaboo skill to take screenshots, click, type, etc.
 ## Related
 
 - [Peekaboo (OpenClaw docs)](https://docs.openclaw.ai/platforms/mac/peekaboo)
-- [Runbook: Lume + OpenClaw setup](runbook-lume-claw-setup.md) — includes a short Peekaboo section and link to this guide
+- [Runbook: Lume + OpenClaw setup](runbook-lume-openclaw-setup.md) — includes a short Peekaboo section and link to this guide

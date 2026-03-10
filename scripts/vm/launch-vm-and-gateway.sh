@@ -6,18 +6,21 @@
 #
 # Env:
 #   VM_NAME - VM name (default: openclaw)
-#   VM_USER - SSH username (default: geegz)
+#   VM_USER - SSH username in the VM (required)
 #
 # Usage:
-#   ./scripts/vm/launch-vm-and-gateway.sh
-#   VM_USER=myuser ./scripts/vm/launch-vm-and-gateway.sh
+#   VM_USER=youruser ./scripts/vm/launch-vm-and-gateway.sh
 #
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 VM_NAME="${VM_NAME:-openclaw}"
-VM_USER="${VM_USER:-geegz}"
+
+if [[ -z "${VM_USER:-}" ]]; then
+  echo "VM_USER is required (SSH username in the VM). Example: VM_USER=youruser $0"
+  exit 1
+fi
 
 if ! command -v lume &>/dev/null; then
   echo "Lume is not installed. Run ./scripts/vm/install-lume.sh first."

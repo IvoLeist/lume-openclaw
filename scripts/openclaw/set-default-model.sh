@@ -9,7 +9,7 @@
 # Usage:
 #   ./scripts/openclaw/set-default-model.sh [MODEL_ID]
 #   ./scripts/openclaw/set-default-model.sh vercel-ai-gateway/anthropic/claude-haiku-4.5
-#   VM_USER=geegz ./scripts/openclaw/set-default-model.sh
+#   VM_USER=youruser ./scripts/openclaw/set-default-model.sh
 #
 # Default MODEL_ID: vercel-ai-gateway/anthropic/claude-haiku-4.5 (Claude Haiku 4.5 via Vercel AI Gateway)
 #

@@ -1,8 +1,8 @@
-# Runbook: Lume + OpenClaw (Clawdbot) Setup
+# Runbook: Lume + OpenClaw Setup
 
-This runbook walks through installing Lume on your host Mac, creating a macOS VM, and running OpenClaw (Clawdbot) **inside** that VM. You and the bot both use the same Lume instance: you via the VM desktop (VNC) and OpenClaw’s channels (Telegram, WhatsApp, webchat, CLI); the bot runs in the same VM and has the same capabilities (browser, shell, files).
+This runbook walks through installing Lume on your host Mac, creating a macOS VM, and running OpenClaw **inside** that VM. You and the bot both use the same Lume instance: you via the VM desktop (VNC) and OpenClaw’s channels (Telegram, WhatsApp, webchat, CLI); the bot runs in the same VM and has the same capabilities (browser, shell, files).
 
-**Constraint:** Clawdbot must run inside the Lume instance (not on the host).
+**Constraint:** OpenClaw must run inside the Lume instance (not on the host).
 
 **Prerequisites:** Apple Silicon Mac (M1/M2/M3/M4), macOS Sequoia or later on the host, ~60 GB free disk space per VM, ~20 minutes.
 
@@ -99,14 +99,17 @@ ssh youruser@<VM_IP>
 Replace `youruser` with the account you created (or `lume` if you used unattended). For scripting, set `VM_USER` and use:
 
 ```bash
+export VM_USER=youruser
 ./scripts/openclaw/openclaw-in-vm.sh "openclaw status"
 ```
+
+The helper scripts require `VM_USER` to be set explicitly so they do not guess the wrong username for your VM.
 
 ---
 
 ## 6. Install OpenClaw inside the VM
 
-**Package names:** The project has been renamed (Moltbot → Clawdbot → OpenClaw). On npm the **current** CLI package is **`openclaw`**; **`clawdbot`** also exists as an older name (older version). Use `openclaw@latest`. The Peekaboo CLI is a separate project (see [Peekaboo Bridge](peekaboo-bridge.md)); it is not published as `@openclaw/peekaboo` — install via Homebrew: `brew install steipete/tap/peekaboo`.
+Use the current npm CLI package: **`openclaw@latest`**. The Peekaboo CLI is a separate project (see [Peekaboo Bridge](peekaboo-bridge.md)); it is not published as `@openclaw/peekaboo` and should be installed via Homebrew: `brew install steipete/tap/peekaboo`.
 
 **Inside the VM** (via SSH or VNC):
 
@@ -159,7 +162,7 @@ openclaw channels login
 
 For Telegram and other channels, see [OpenClaw channels docs](https://docs.clawd.bot/channels).
 
-**Webhooks:** If you use Telegram/WhatsApp webhooks, the gateway inside the VM must be reachable from the internet. See [Port forwarding / webhooks](../docs/port-forwarding.md) (or the optional section in this repo).
+**Webhooks:** If you use Telegram/WhatsApp webhooks, the gateway inside the VM must be reachable from the internet. See [Port forwarding / webhooks](port-forwarding.md).
 
 ---
 
@@ -258,7 +261,7 @@ See [BlueBubbles channel](https://docs.clawd.bot/channels/bluebubbles) for full 
 | Can’t SSH into VM | Ensure **Remote Login** is enabled in the VM’s System Settings → Sharing. |
 | VM IP not showing | Wait for the VM to fully boot, then run `lume get openclaw` again. |
 | WhatsApp QR not scanning | Run `openclaw channels login` while logged into the VM (VNC or SSH), not from the host. |
-| Gateway not reachable for webhooks | Use port forwarding or a tunnel; see [Port forwarding](../docs/port-forwarding.md). |
+| Gateway not reachable for webhooks | Use port forwarding or a tunnel; see [port-forwarding.md](port-forwarding.md). |
 
 ---
 
@@ -306,7 +309,7 @@ To let the OpenClaw agent **see and automate the macOS UI** inside the VM (e.g. 
    ```
    You should see the host (OpenClaw.app or Peekaboo.app) and the socket path.
 
-For a full step-by-step guide, troubleshooting (e.g. “bridge client not authorized”, Gatekeeper blocking the app), and the Peekaboo.app fallback, see **[Peekaboo Bridge in the VM](peekaboo-bridge.md)** (includes how to use Peekaboo with Clawdbot: enable skill, PATH for gateway).
+For a full step-by-step guide, troubleshooting (e.g. “bridge client not authorized”, Gatekeeper blocking the app), and the Peekaboo.app fallback, see **[Peekaboo Bridge in the VM](peekaboo-bridge.md)** (including how to enable the skill and PATH for the gateway).
 
 ---
 

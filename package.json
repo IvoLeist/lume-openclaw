@@ -1,7 +1,7 @@
 {
-  "name": "lume-moltbot",
+  "name": "lume-openclaw",
   "version": "1.0.0",
-  "description": "Run OpenClaw (Clawdbot) inside a Lume macOS VM. Scripts and docs for host-side control.",
+  "description": "Run OpenClaw inside a Lume macOS VM. Scripts and docs for host-side control.",
   "private": true,
   "scripts": {
     "vm:install": "./scripts/vm/install-lume.sh",
