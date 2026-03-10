@@ -43,6 +43,7 @@ From the repo root, with `VM_USER` set if your VM user is not `geegz`:
 |---------|--------|
 | `npm run vm:launch` | Start the VM (if needed) and run the OpenClaw gateway in this terminal. Then in another terminal run `npm run tui`. |
 | `npm run vm:start` | Start the VM headlessly. |
+| `npm run vm:ui` | Start the VM with VNC display (desktop UI). |
 | `npm run vm:stop` | Stop the VM. |
 | `npm run vm:restart` | Stop then start the VM. |
 | `npm run gateway` | SSH in and run the OpenClaw gateway (VM must already be running). |

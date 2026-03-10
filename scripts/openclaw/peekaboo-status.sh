@@ -21,4 +21,5 @@ if [[ -z "${VM_USER:-}" ]]; then
   exit 1
 fi
 
-exec "$SCRIPT_DIR/openclaw-in-vm.sh" "peekaboo bridge status --verbose"
+# Use $HOME/bin/peekaboo so it works when VM shell doesn't source .zshrc (non-interactive SSH)
+exec "$SCRIPT_DIR/openclaw-in-vm.sh" '$HOME/bin/peekaboo bridge status --verbose'

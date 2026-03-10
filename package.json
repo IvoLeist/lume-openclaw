@@ -7,13 +7,16 @@
     "vm:install": "./scripts/vm/install-lume.sh",
     "vm:create": "./scripts/vm/create-openclaw-vm.sh",
     "vm:start": "./scripts/vm/start-vm.sh",
+    "vm:ui": "./scripts/vm/start-vm-with-display.sh",
     "vm:stop": "./scripts/vm/stop-vm.sh",
     "vm:restart": "npm run vm:stop && npm run vm:start",
     "vm:launch": "./scripts/vm/launch-vm-and-gateway.sh",
     "gateway": "./scripts/openclaw/openclaw-gateway.sh",
+    "gateway:stop": "./scripts/openclaw/openclaw-stop.sh",
     "tui": "./scripts/openclaw/openclaw-tui.sh",
     "ssh": "./scripts/connect/ssh-vm.sh",
     "run": "./scripts/openclaw/openclaw-in-vm.sh",
+    "model:set": "./scripts/openclaw/set-default-model.sh",
     "peekaboo:status": "./scripts/openclaw/peekaboo-status.sh"
   }
 }

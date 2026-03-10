@@ -22,9 +22,24 @@ Only one host needs to be running with the bridge enabled.
 
 ## 2. Install the host app in the VM
 
-1. **Download** the macOS Companion (OpenClaw.app) or Peekaboo.app from the OpenClaw site, **inside the VM** (e.g. in the VM’s Safari or via shared folder).
-2. **Install** by dragging the app to **Applications** (inside the VM).
-3. **Open the app** at least once so macOS can register it and show permission prompts later.
+**Peekaboo.app and OpenClaw.app are not installed by default** — you must download and install one of them in the VM.
+
+### Peekaboo.app (standalone host)
+
+- **Download:** [GitHub Releases (steipete/Peekaboo)](https://github.com/steipete/Peekaboo/releases/latest) — open the page **in the VM** (Safari) or on the host, then copy the `.dmg` or `.zip` into the VM.
+- **From host to VM:** use the copy script:  
+  `VM_USER=myuser ./scripts/connect/copy-to-vm.sh /path/to/Peekaboo-….dmg ~/Downloads/`  
+  Then in the VM: open the DMG and drag **Peekaboo.app** to **Applications**.
+- **Website (links to releases):** [peekaboo.boo](https://www.peekaboo.boo/) → Download.
+
+### OpenClaw.app (macOS Companion — alternative host)
+
+- **Download:** [OpenClaw / Clawdbot macOS Companion](https://docs.clawd.bot/platforms/macos) — follow the doc for the current download (installer or .app/.dmg). Install **inside the VM** (Safari in the VM or copy from host via `copy-to-vm.sh`).
+
+### After download
+
+1. **Install** by dragging the app to **Applications** (inside the VM).
+2. **Open the app** at least once so macOS can register it and show permission prompts later.
 
 If macOS blocks the app (Gatekeeper): **System Settings → Privacy & Security** → at the bottom, **Open Anyway** for the app.
 
@@ -53,7 +68,7 @@ If you don’t see the app in the list, open the host app again and trigger an a
 
 ## 5. Install the `peekaboo` CLI in the VM
 
-The Peekaboo CLI is installed via **Homebrew** (there is no npm package). Inside the VM (via SSH or VNC Terminal):
+The Peekaboo CLI comes from the [Peekaboo](https://github.com/steipete/Peekaboo) project (steipete), not from an OpenClaw npm package. There is **no** `@openclaw/peekaboo` or `clawdbot` peekaboo package; the project has been renamed (Moltbot → Clawdbot → OpenClaw) but Peekaboo has always been a separate repo. Install the CLI via **Homebrew**. Inside the VM (via SSH or VNC Terminal):
 
 ```bash
 brew install steipete/tap/peekaboo
@@ -100,6 +115,77 @@ The agent uses the `peekaboo` CLI to request screen snapshots; the host app (run
 
 ---
 
+## 8. Use Peekaboo with Clawdbot/OpenClaw
+
+For the **agent** (Clawdbot/OpenClaw) to use Peekaboo, the gateway must load the **peekaboo skill** and be able to run the `peekaboo` binary. Do the following **inside the VM**.
+
+### 8.1 Enable the peekaboo skill in config
+
+OpenClaw/Clawdbot uses a **skills** system; the peekaboo skill is often bundled and gated by the presence of the `peekaboo` binary on PATH. Enable it in your config.
+
+Config file (one of these, depending on version):
+
+- **`~/.openclaw/openclaw.json`** (current OpenClaw)
+- or **`~/.clawdbot/moltbot.json`** (older naming)
+
+Add or merge a `skills.entries` section with `peekaboo` enabled:
+
+```json
+{
+  "skills": {
+    "entries": {
+      "peekaboo": { "enabled": true }
+    }
+  }
+}
+```
+
+If you use **`allowBundled`** (only certain bundled skills are loaded), include `"peekaboo"` in that list:
+
+```json
+{
+  "skills": {
+    "allowBundled": ["peekaboo", "…"],
+    "entries": {
+      "peekaboo": { "enabled": true }
+    }
+  }
+}
+```
+
+Save the file. See [Skills config](https://docs.clawd.bot/tools/skills-config) for the full schema.
+
+### 8.2 Ensure the gateway can find `peekaboo`
+
+The peekaboo skill is **gated by the `peekaboo` binary**: the gateway checks at load time that `peekaboo` is on **PATH**. If you installed the CLI to **`~/bin/peekaboo`**, the **gateway process** must run with PATH that includes `$HOME/bin`.
+
+- **If you start the gateway from a Terminal (SSH or VNC):** run `source ~/.zshrc` (or open a login shell) so that `~/bin` is on PATH, then start the gateway (e.g. `openclaw gateway` or `openclaw tui`). The agent will then see the peekaboo skill and can call the CLI.
+- **If the gateway runs as a daemon/service:** run the gateway script from the host: `npm run gateway` (or `./scripts/openclaw/openclaw-gateway.sh`). It patches the LaunchAgent PATH in the VM (so `peekaboo` and `openclaw` are on PATH) before starting or tailing the gateway. Start a **new** chat/session after that so the agent can use the peekaboo skill.
+
+Optional: add `export PATH="$HOME/bin:$PATH"` to `~/.zshrc` (or equivalent) in the VM if not already there, so any shell-started gateway has it.
+
+### 8.3 Restart the gateway and start a new session
+
+Skills are snapshotted when a session starts. After changing config or PATH:
+
+1. Restart the gateway (and daemon if you use it).
+2. Open a **new** chat/session (TUI, Telegram, WhatsApp, etc.).
+
+The agent can then use the peekaboo skill to take screenshots, click, type, etc. on the VM’s macOS UI (as long as the Peekaboo Bridge host app is running and permissions are granted).
+
+### Quick checklist
+
+| Step | Done |
+|------|------|
+| Peekaboo CLI installed in VM (e.g. `~/bin/peekaboo` or `brew`) | ☐ |
+| `peekaboo` on PATH when the gateway runs | ☐ |
+| OpenClaw.app or Peekaboo.app running in VM with **Peekaboo Bridge** enabled | ☐ |
+| Screen Recording + Accessibility granted for the host app | ☐ |
+| `skills.entries.peekaboo.enabled: true` in config | ☐ |
+| Gateway restarted, new session started | ☐ |
+
+---
+
 ## Troubleshooting
 
 | Problem | What to do |
@@ -109,6 +195,7 @@ The agent uses the `peekaboo` CLI to request screen snapshots; the host app (run
 | **Permission dialogs never appear over SSH** | macOS shows TCC dialogs only in the graphical session. Use VNC to the VM and grant **Screen Recording** and **Accessibility** in System Settings → Privacy & Security. |
 | **Gatekeeper blocks the app** | In the VM: **System Settings → Privacy & Security** → scroll down → **Open Anyway** for the app. |
 | **Socket path / discovery** | You can override the socket with `export PEEKABOO_BRIDGE_SOCKET=/path/to/bridge.sock`. Normally discovery is automatic (Peekaboo.app → Claude.app → OpenClaw.app). |
+| **Peekaboo skill not used / “peekaboo not found”** | The gateway daemon’s PATH may not include `~/bin`. Run `npm run gateway` (or `./scripts/openclaw/openclaw-gateway.sh`) so it patches the LaunchAgent PATH, then start a new chat/session. |
 
 ---
 

@@ -4,27 +4,19 @@
 #
 # Env:
 #   VM_NAME - VM name (default: openclaw)
-#   VM_USER - SSH username (required; e.g. your macOS account in the VM, or "lume" if using unattended tahoe)
+#   VM_USER - SSH username (default: geegz; override if your VM user is different)
 #   VM_IP   - optional; if set, skip resolving IP via lume get
 #
 # Usage:
-#   VM_USER=myuser ./scripts/openclaw/openclaw-in-vm.sh "openclaw status"
+#   ./scripts/openclaw/openclaw-in-vm.sh                    # default: openclaw status
+#   ./scripts/openclaw/openclaw-in-vm.sh "openclaw status"
 #   VM_USER=lume ./scripts/openclaw/openclaw-in-vm.sh "npm install -g openclaw@latest && openclaw onboard --install-daemon"
 #
 set -euo pipefail
 
 VM_NAME="${VM_NAME:-openclaw}"
-CMD="${1:-}"
-
-if [[ -z "${VM_USER:-}" ]]; then
-  echo "VM_USER is required (SSH username in the VM). Example: VM_USER=myuser $0 'openclaw status'"
-  exit 1
-fi
-
-if [[ -z "$CMD" ]]; then
-  echo "Usage: VM_USER=user $0 '<command>'"
-  exit 1
-fi
+VM_USER="${VM_USER:-geegz}"
+CMD="${1:-openclaw status}"
 
 if ! command -v lume &>/dev/null; then
   echo "Lume is not installed. Run ./scripts/vm/install-lume.sh first."
@@ -45,4 +37,8 @@ if [[ -z "$IP" ]]; then
   exit 1
 fi
 
-ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 "$VM_USER@$IP" "$CMD"
+# Non-interactive SSH does not source ~/.zshrc; ensure npm global bin (openclaw) is on PATH.
+# Pass CMD via base64 to avoid quoting issues with special characters.
+B64_CMD=$(printf '%s' "$CMD" | base64 | tr -d '\n')
+ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 "$VM_USER@$IP" \
+  "export PATH=\"\$HOME/node-v22.12.0-darwin-arm64/bin:\$PATH\" && bash -c \"\$(echo $B64_CMD | base64 -d)\""

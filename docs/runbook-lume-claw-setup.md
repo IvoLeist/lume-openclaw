@@ -106,6 +106,8 @@ Replace `youruser` with the account you created (or `lume` if you used unattende
 
 ## 6. Install OpenClaw inside the VM
 
+**Package names:** The project has been renamed (Moltbot → Clawdbot → OpenClaw). On npm the **current** CLI package is **`openclaw`**; **`clawdbot`** also exists as an older name (older version). Use `openclaw@latest`. The Peekaboo CLI is a separate project (see [Peekaboo Bridge](peekaboo-bridge.md)); it is not published as `@openclaw/peekaboo` — install via Homebrew: `brew install steipete/tap/peekaboo`.
+
 **Inside the VM** (via SSH or VNC):
 
 ```bash
@@ -304,7 +306,7 @@ To let the OpenClaw agent **see and automate the macOS UI** inside the VM (e.g. 
    ```
    You should see the host (OpenClaw.app or Peekaboo.app) and the socket path.
 
-For a full step-by-step guide, troubleshooting (e.g. “bridge client not authorized”, Gatekeeper blocking the app), and the Peekaboo.app fallback, see **[Peekaboo Bridge in the VM](peekaboo-bridge.md)**.
+For a full step-by-step guide, troubleshooting (e.g. “bridge client not authorized”, Gatekeeper blocking the app), and the Peekaboo.app fallback, see **[Peekaboo Bridge in the VM](peekaboo-bridge.md)** (includes how to use Peekaboo with Clawdbot: enable skill, PATH for gateway).
 
 ---
 
