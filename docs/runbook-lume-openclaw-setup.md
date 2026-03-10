@@ -60,6 +60,22 @@ Takes 10–15 minutes; no interaction. Change the default password after first l
 ./scripts/vm/create-openclaw-vm.sh
 ```
 
+To start the VM with the desktop UI again later, use one of these on the host:
+
+```bash
+./scripts/vm/start-vm-with-display.sh
+```
+
+```bash
+LUME_DISPLAY=1 ./scripts/vm/start-vm.sh
+```
+
+If the VM is already running headlessly, stop it first:
+
+```bash
+./scripts/vm/stop-vm.sh
+```
+
 ---
 
 ## 3. Complete Setup Assistant (if not using unattended)
@@ -183,6 +199,13 @@ Or use the scripts:
 ```
 
 The VM runs in the background. OpenClaw’s daemon keeps the gateway running inside the VM.
+
+To switch back to the desktop UI later, stop the headless VM and start it with display:
+
+```bash
+./scripts/vm/stop-vm.sh
+./scripts/vm/start-vm-with-display.sh
+```
 
 Check status from the host:
 

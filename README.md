@@ -46,6 +46,18 @@ You do not need to run `npm install` in this repo to use the bash scripts.
 
    Manual mode opens a VNC window. Finish macOS Setup Assistant, create a user, then enable `Remote Login` in `System Settings -> General -> Sharing`.
 
+   If you want to relaunch the VM desktop later, use either:
+
+   ```bash
+   ./scripts/vm/start-vm-with-display.sh
+   ```
+
+   or:
+
+   ```bash
+   npm run vm:ui
+   ```
+
 3. Export the VM username for the helper scripts.
 
    The SSH-based scripts require `VM_USER` so they do not guess the wrong username for your VM:
