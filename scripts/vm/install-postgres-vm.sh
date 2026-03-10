@@ -8,6 +8,7 @@
 #   VM_USER - SSH username (required; for example your VM account or `lume`)
 #   VM_IP   - optional; if set, skip resolving IP via lume get
 #   POSTGRES_PASSWORD - optional password for the `postgres` role; if unset, a password is generated once and reused
+#   PRINT_POSTGRES_PASSWORD - set to 1 to print the password to stdout after install
 #
 # Usage:
 #   VM_USER=youruser ./scripts/vm/install-postgres-vm.sh
@@ -41,6 +42,7 @@ if [[ -z "$IP" ]]; then
 fi
 
 POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-}"
+PRINT_POSTGRES_PASSWORD="${PRINT_POSTGRES_PASSWORD:-0}"
 POSTGRES_PASSWORD_B64=""
 if [[ -n "$POSTGRES_PASSWORD" ]]; then
   POSTGRES_PASSWORD_B64="$(printf '%s' "$POSTGRES_PASSWORD" | base64 | tr -d '\n')"
@@ -118,11 +120,17 @@ fi
 export PATH="/opt/homebrew/bin:/usr/local/bin:/opt/homebrew/opt/postgresql@16/bin:/usr/local/opt/postgresql@16/bin:$HOME/Applications/Postgres.app/Contents/Versions/latest/bin:$HOME/Applications/Postgres.app/Contents/Versions/18/bin:$PATH"
 createuser -s postgres 2>/dev/null || true
 psql -v pw="$POSTGRES_PASSWORD" -d postgres -c "ALTER USER postgres WITH PASSWORD :'pw';"
-echo "PostgreSQL is ready. User: postgres, password: $POSTGRES_PASSWORD"
+echo "PostgreSQL is ready. User: postgres"
+if [[ "${PRINT_POSTGRES_PASSWORD:-0}" == "1" ]]; then
+  echo "Password: $POSTGRES_PASSWORD"
+else
+  echo "Password stored at: $PASSWORD_FILE"
+  echo "Reveal it inside the VM only when needed: cat \"$PASSWORD_FILE\""
+fi
 echo "Password file: $PASSWORD_FILE"
 '
 
 ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 "$VM_USER@$IP" \
-  "POSTGRES_PASSWORD_B64='$POSTGRES_PASSWORD_B64' bash -s" <<< "$REMOTE_SCRIPT"
+  "POSTGRES_PASSWORD_B64='$POSTGRES_PASSWORD_B64' PRINT_POSTGRES_PASSWORD='$PRINT_POSTGRES_PASSWORD' bash -s" <<< "$REMOTE_SCRIPT"
 
 echo "Done."

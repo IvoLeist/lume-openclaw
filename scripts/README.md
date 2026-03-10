@@ -32,7 +32,7 @@ scripts/
 | [vm/start-vm-with-display.sh](vm/start-vm-with-display.sh) | Start the VM with VNC display (desktop UI). Same as `LUME_DISPLAY=1 ./scripts/vm/start-vm.sh`. |
 | [vm/stop-vm.sh](vm/stop-vm.sh) | Stop the VM. |
 | [vm/launch-vm-and-gateway.sh](vm/launch-vm-and-gateway.sh) | Start the VM (if needed), wait for SSH, then run the OpenClaw gateway in this terminal. Use another terminal for TUI. |
-| [vm/install-postgres-vm.sh](vm/install-postgres-vm.sh) | Install PostgreSQL in the VM via Homebrew and set the postgres role password. Requires `VM_USER`. Set `POSTGRES_PASSWORD` to control the password, or let the script generate one once and reuse it from the VM. |
+| [vm/install-postgres-vm.sh](vm/install-postgres-vm.sh) | Install PostgreSQL in the VM via Homebrew and set the postgres role password. Requires `VM_USER`. Set `POSTGRES_PASSWORD` to control the password, or let the script generate one once and reuse it from the VM. The script no longer prints the password unless `PRINT_POSTGRES_PASSWORD=1`. |
 
 ## openclaw/ — OpenClaw (inside VM)
 

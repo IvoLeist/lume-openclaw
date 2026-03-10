@@ -1,1 +1,18 @@
 .DS_Store
+
+# Common local secret and credential files
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.crt
+*.cer
+*.csr
+*.ovpn
+*.mobileconfig
+*.kdbx
+.netrc
+.npmrc
+.pypirc
