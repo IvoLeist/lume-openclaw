@@ -29,7 +29,7 @@ if [[ -n "$UNATTENDED" ]]; then
   echo "Using unattended preset: $UNATTENDED (user lume / pass lume; change after first login)."
   lume create "$VM_NAME" --os macos --ipsw "$IPSW" --unattended "$UNATTENDED"
 else
-  lume create "$VM_NAME" --os macos --ipsw "$IPSW"
+  lume create "$VM_NAME" --os macos --ipsw "$IPSW" --storage external --memory 6GB --cpu 3
   echo "VNC window will open. Complete Setup Assistant, then enable Remote Login (System Settings → Sharing)."
 fi
 
