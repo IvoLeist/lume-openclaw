@@ -6,7 +6,9 @@
 
 set -euo pipefail
 
-# Allow only specific commands
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENV_FILE="$SCRIPT_DIR/.env.docker"
+
 CMD="${SSH_ORIGINAL_COMMAND:-}"
 printf "Received command: %s\n" "$CMD"
 
@@ -19,8 +21,10 @@ case "$CMD" in
     ;;
 esac
 
-exec docker run --rm \
-  --env-file ".env.docker" \
+DOCKER_BIN="/usr/local/bin/docker"
+
+exec "$DOCKER_BIN" run --rm \
+  --env-file "$ENV_FILE" \
   --network host \
   --read-only \
   --tmpfs /tmp \
