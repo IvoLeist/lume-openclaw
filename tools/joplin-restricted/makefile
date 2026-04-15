@@ -65,3 +65,6 @@ d-get-notebook-id:
 
 d-list-notes:
 	$(DOCKER_RUN) list-notes
+
+ssh-list-notes:
+	SSH_ORIGINAL_COMMAND="list-notes" ./joplin-restricted.sh
