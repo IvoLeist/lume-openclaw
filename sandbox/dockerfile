@@ -1,0 +1,67 @@
+FROM debian:bookworm-slim
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    openssh-server \
+    ca-certificates \
+    bash \
+    coreutils \
+    findutils \
+    grep \
+    sed \
+    gawk \
+    procps \
+    psmisc \
+    tar \
+    gzip \
+    xz-utils \
+    unzip \
+    zip \
+    curl \
+    wget \
+    git \
+    rsync \
+    less \
+    vim-tiny \
+    python3 \
+    python3-pip \
+    python3-venv \
+    make \
+    jq \
+    tini \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN useradd -m -s /bin/bash sandbox \
+ && passwd -d sandbox \
+ && mkdir -p /home/sandbox/.ssh /workspace /var/run/sshd \
+ && chown -R sandbox:sandbox /home/sandbox /workspace \
+ && chmod 700 /home/sandbox/.ssh
+
+# Harden sshd a bit
+RUN printf '%s\n' \
+  'Port 22' \
+  'Protocol 2' \
+  'HostKey /etc/ssh/ssh_host_ed25519_key' \
+  'UsePAM no' \
+  'PasswordAuthentication no' \
+  'KbdInteractiveAuthentication no' \
+  'ChallengeResponseAuthentication no' \
+  'PermitRootLogin no' \
+  'PubkeyAuthentication yes' \
+  'AuthorizedKeysFile .ssh/authorized_keys' \
+  'AllowUsers sandbox' \
+  'X11Forwarding no' \
+  'AllowAgentForwarding no' \
+  'AllowTcpForwarding no' \
+  'PermitTunnel no' \
+  'PrintMotd no' \
+  'Subsystem sftp internal-sftp' \
+  > /etc/ssh/sshd_config
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 22
+
+ENTRYPOINT ["/usr/bin/tini", "--", "/entrypoint.sh"]

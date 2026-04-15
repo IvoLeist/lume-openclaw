@@ -1,0 +1,19 @@
+{
+  "agents": {
+    "defaults": {
+      "sandbox": {
+        "mode": "all",
+        "backend": "ssh",
+        "scope": "session",
+        "workspaceAccess": "rw",
+        "ssh": {
+          "target": "sandbox@<SANDBOX_HOST>:2222",
+          "workspaceRoot": "/workspace",
+          "identityFile": "~/.ssh/<KEY_NAME>",
+          "knownHostsFile": "~/.ssh/known_hosts",
+          "strictHostKeyChecking": true
+        }
+      }
+    }
+  }
+}

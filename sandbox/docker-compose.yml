@@ -1,0 +1,14 @@
+services:
+  openclaw-sandbox:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openclaw-sandbox
+    restart: unless-stopped
+    ports:
+      - "2222:22"
+    volumes:
+      - ./auth:/authorized_keys:ro
+      - ~/openclaw-workspace:/workspace
+    security_opt:
+      - no-new-privileges:true

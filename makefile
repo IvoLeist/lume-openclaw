@@ -102,3 +102,5 @@ copy-to-vm:
 	fi
 	./scripts/connect/copy-to-vm.sh "$(LOCAL_PATH)" "$(REMOTE_PATH)"
 
+ssh-sandbox:
+	$(SETUP); ./scripts/connect/ssh-sandbox.sh

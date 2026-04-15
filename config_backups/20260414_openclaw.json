@@ -1,0 +1,127 @@
+{
+  "agents": {
+    "defaults": {
+      "workspace": "<LOCAL_WORKSPACE_PATH>",
+      "models": {
+        "openai-codex/gpt-5.4": {}
+      },
+      "model": {
+        "primary": "openai-codex/gpt-5.4"
+      },
+      "sandbox": {
+        "mode": "all",
+        "backend": "ssh",
+        "scope": "session",
+        "workspaceAccess": "rw",
+        "ssh": {
+          "target": "sandbox@<SANDBOX_HOST>:2222",
+          "workspaceRoot": "/workspace",
+          "identityFile": "~/.ssh/<KEY_NAME>",
+          "knownHostsFile": "~/.ssh/known_hosts",
+          "strictHostKeyChecking": true
+        }
+      }
+    }
+  },
+  "gateway": {
+    "mode": "local",
+    "auth": {
+      "mode": "token",
+      "token": {
+        "source": "exec",
+        "provider": "bitwarden",
+        "id": "<BWS_ITEM_ID_FOR_GATEWAY_TOKEN>"
+      }
+    },
+    "port": "<GATEWAY_PORT>",
+    "bind": "<GATEWAY_BIND_ADDRESS_IF_NOT_LOOPBACK>",
+    "tailscale": {
+      "mode": "<mode_for_tailscale_if_used>",
+      "resetOnExit": "<true_or_false_based_on_preference>"
+    },
+    "controlUi": {
+      "allowInsecureAuth": "<true_or_false_based_on_preference>"
+    },
+    "nodes": {
+      "denyCommands": [
+        "<LIST_OF_COMMANDS_TO_DENY_ON_GATEWAY_NODES_IF_ANY>"
+      ]
+    }
+  },
+  "session": {
+    "dmScope": "per-channel-peer"
+  },
+  "tools": {
+    "profile": "coding"
+  },
+  "secrets": {
+    "providers": {
+      "bitwarden": {
+        "source": "exec",
+        "command": "<PATH>/openclaw-bws-resolver.sh",
+        "passEnv": ["BWS_ACCESS_TOKEN"],
+        "jsonOnly": true
+      }
+    },
+    "defaults": {
+      "exec": "bitwarden"
+    },
+    "resolution": {
+      "maxProviderConcurrency": 4,
+      "maxRefsPerProvider": 512,
+      "maxBatchBytes": 262144
+    }
+  },
+  "auth": {
+    "profiles": {
+      "openai-codex:<EMAIL>": {
+        "provider": "openai-codex",
+        "mode": "oauth",
+        "email": "<EMAIL>"
+      }
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "groups": {
+        "*": {
+          "requireMention": true
+        }
+      },
+      "botToken": {
+        "source": "exec",
+        "provider": "bitwarden",
+        "id": "<BWS_ITEM_ID_FOR_TELEGRAM_BOT_TOKEN>"
+      },
+      "dmPolicy": "pairing"
+    }
+  },
+  "meta": {
+    "lastTouchedVersion": "<VERSION>",
+    "lastTouchedAt": "<TIMESTAMP>"
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "boot-md": {
+          "enabled": true
+        }
+      }
+    }
+  },
+  "wizard": {
+    "lastRunAt": "<TIMESTAMP>",
+    "lastRunVersion": "<VERSION>",
+    "lastRunCommand": "onboard",
+    "lastRunMode": "local"
+  },
+  "plugins": {
+    "entries": {
+      "openai": {
+        "enabled": true
+      }
+    }
+  }
+}

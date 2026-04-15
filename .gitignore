@@ -16,3 +16,5 @@
 .netrc
 .npmrc
 .pypirc
+
+sandbox/auth
