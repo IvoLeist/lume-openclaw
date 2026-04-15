@@ -1,0 +1,10 @@
+[project]
+name = "joplin-restricted"
+version = "0.1.0"
+description = "A restricted interface to the Joplin WebClipper API, designed for secure interactions with Joplin notes."
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "requests>=2.33.1",
+    "typer>=0.24.1",
+]
