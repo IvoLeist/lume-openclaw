@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# This shell wrapper is supposed to be calle via SSH from OpenClaw. 
+# This shell wrapper is supposed to be called via SSH from OpenClaw. 
 # The corresponding SSH key is locked down to only allow
 # running this script
 

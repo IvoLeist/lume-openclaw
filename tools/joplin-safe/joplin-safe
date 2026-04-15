@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# This file needs to be copied to the VM running OpenClaw and made executable.
+# It serves as a safe wrapper for the joplin-restricted.sh script,
+# and is referenced by the according OpenClaw SKILL.md
+
+set -euo pipefail
+exec ssh joplin-restricted "$@"
