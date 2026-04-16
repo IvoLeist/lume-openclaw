@@ -17,4 +17,5 @@
 .npmrc
 .pypirc
 
-sandbox/auth
+sandbox/ssh-in
+sandbox/ssh-out

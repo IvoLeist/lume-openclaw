@@ -1,14 +1,15 @@
-import os
-
 import requests
 import typer
 
-BASE = os.environ["JOPLIN_BASE_URL"].rstrip("/")
-TOKEN = os.environ["JOPLIN_API_TOKEN"]
+BASE = "http://host.docker.internal:41184"
+TOKEN_PATH = "/run/secrets/joplin_api_token"
+
+with open(TOKEN_PATH, "r") as f:
+    TOKEN = f.read().strip()   
+
 ALLOWED_NOTEBOOK = "4. OpenClaw"
 
 app = typer.Typer()
-
 
 def _get_notebook_id() -> str:
     response = requests.get(

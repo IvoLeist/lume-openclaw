@@ -1,0 +1,11 @@
+# Ignore everything
+*
+
+# Re-include directories so Git can keep descending
+!*/
+
+# Keep this .gitignore file
+!.gitignore
+
+# Un-ignore any README.md anywhere under this folder
+!**/README.md

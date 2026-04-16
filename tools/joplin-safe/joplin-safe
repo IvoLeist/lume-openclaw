@@ -1,8 +1,39 @@
 #!/usr/bin/env bash
-
-# This file needs to be copied to the VM running OpenClaw and made executable.
-# It serves as a safe wrapper for the joplin-restricted.sh script,
-# and is referenced by the according OpenClaw SKILL.md
-
 set -euo pipefail
-exec ssh joplin-restricted "$@"
+
+if [ "$#" -eq 0 ]; then
+  echo "❌ No command provided" >&2
+  echo "Usage:" >&2
+  echo "  joplin-remote list-notes" >&2
+  echo "  joplin-remote create-note \"TITLE\"" >&2
+  exit 1
+fi
+
+CMD="$1"
+shift || true
+
+case "$CMD" in
+  list-notes)
+    if [ "$#" -ne 0 ]; then
+      echo "❌ list-notes takes no arguments" >&2
+      exit 1
+    fi
+    REMOTE_CMD="list-notes"
+    ;;
+  create-note)
+    if [ "$#" -lt 1 ]; then
+      echo "❌ create-note requires a title" >&2
+      exit 1
+    fi
+    REMOTE_CMD="create-note $*"
+    ;;
+  *)
+    echo "❌ Command not allowed: $CMD" >&2
+    exit 1
+    ;;
+esac
+
+echo "🔒 Joplin remote wrapper" >&2
+echo "Sending command: $REMOTE_CMD" >&2
+
+exec ssh joplin-safe "$REMOTE_CMD"

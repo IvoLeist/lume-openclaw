@@ -1,0 +1,25 @@
+services:
+  openclaw-sandbox:
+    build:
+      context: ./sandbox
+    container_name: openclaw-sandbox
+    restart: unless-stopped
+    ports:
+      - "2222:22"
+    volumes:
+      - ./sandbox/ssh/ssh-in:/authorized_keys:ro
+      - ./sandbox/ssh/ssh-out:/ssh-out:ro
+      - ~/openclaw-workspace:/workspace
+      - ./tools/joplin-safe/joplin-safe:/joplin-safe:ro
+      - ./tools/joplin-safe/SKILL.md:/opt/tools/joplin-safe/SKILL.md:ro
+    security_opt:
+      - no-new-privileges:true
+
+  joplin-safe:
+    build:
+      context: ./tools/joplin-safe
+    container_name: joplin-safe
+    restart: unless-stopped
+    volumes:
+      - ./tools/joplin-safe/ssh-in:/authorized_keys:ro
+      - ./tools/joplin-safe/secrets/joplin_api_token:/run/secrets/joplin_api_token:ro

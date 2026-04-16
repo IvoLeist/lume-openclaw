@@ -1,1 +1,3 @@
 .venv
+ssh-in/authorized_keys
+secrets/joplin_api_token
