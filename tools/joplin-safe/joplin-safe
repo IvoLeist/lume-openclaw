@@ -21,8 +21,9 @@ case "$CMD" in
     REMOTE_CMD="list-notes"
     ;;
   create-note)
-    if [ "$#" -lt 1 ]; then
-      echo "❌ create-note requires a title" >&2
+    if [ "$#" -lt 2 ]; then
+      echo "❌ create-note requires a title and a body" >&2
+      echo "Usage: joplin-remote create-note \"TITLE\" \"BODY\"" >&2
       exit 1
     fi
     REMOTE_CMD="create-note $*"

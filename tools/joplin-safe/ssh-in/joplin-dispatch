@@ -15,12 +15,17 @@ case "$RAW_CMD" in
     exec python /app/joplin_api_wrapper.py list-notes
     ;;
   create-note\ *)
-    TITLE="${RAW_CMD#create-note }"
-    if [ -z "$TITLE" ]; then
-      echo "❌ create-note requires a title" >&2
+    PAYLOAD="${RAW_CMD#create-note }"
+    TITLE="${PAYLOAD%% *}"
+    BODY="${PAYLOAD#* }"
+
+    if [ -z "$PAYLOAD" ] || [ "$PAYLOAD" = "$TITLE" ] || [ -z "$TITLE" ] || [ -z "$BODY" ]; then
+      echo "❌ create-note requires a title and a body" >&2
+      echo "Usage: create-note <title> <body>" >&2
       exit 1
     fi
-    exec python /app/joplin_api_wrapper.py create-note "$TITLE"
+
+    exec python /app/joplin_api_wrapper.py create-note "$TITLE" "$BODY"
     ;;
   *)
     echo "❌ Command not allowed" >&2
