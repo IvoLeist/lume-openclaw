@@ -8,6 +8,7 @@ ENV_FILE_FOR_DOCKER ?= .env.docker
 ARGS ?=
 TITLE ?=
 BODY ?=
+FILE_PATH ?= test/manual/test.txt
 
 UV_RUN := uv run --env-file $(ENV_FILE) joplin_api_wrapper.py $(ARGS)
 
@@ -56,6 +57,9 @@ create:
 		then echo 'Usage: make create-note TITLE="..." BODY="..."';\
 		exit 1; fi
 	$(UV_RUN) create-note "$(TITLE)" "$(BODY)"
+
+upload:
+	$(UV_RUN) upload-file "$(FILE_PATH)"
 
 build-image:
 	docker build -t $(DOCKER_IMAGE) .
